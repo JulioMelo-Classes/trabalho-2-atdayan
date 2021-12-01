@@ -1,14 +1,10 @@
-#include "Sistema.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include "Sistema.hpp"
+#include "Usuario.hpp"
 
 using namespace std;
-
-#include "Sistema.h"
-#include <iostream>
-#include <sstream>
-#include <algorithm>
 
 /* COMANDOS */
 string Sistema::quit() {
