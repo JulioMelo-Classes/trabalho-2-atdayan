@@ -12,8 +12,8 @@ Sistema::quit() {
     return "Saindo...";
 }
 
-string 
-Sistema::create_user (const string email, const string senha, const string nome) {
+//Checkpoint 1, essa indentação com "tipo de retorno" + enter não existe, mas blz, o correto seria:
+string Sistema::create_user (const string email, const string senha, const string nome) {
 
     for (Usuario *u : m_usuarios) 
         if (u->get_email().compare(email) == 0) 
@@ -28,8 +28,11 @@ Sistema::create_user (const string email, const string senha, const string nome)
 	return "Usuário criado";
 }
 
-string 
-Sistema::delete_user (const std::string email, const std::string senha){
+//existe uma variação da lista de parâmetros, onde vc pode colocar eles com quebra de linha quando a lista é muito grande
+//vc pode ainda adicionar um comentário ou outro em cada parametro ficando com um códio menos "horizontal"
+string Sistema::delete_user (const std::string email, //dessa forma vc pode comentar alguma aqui 
+			     const std::string senha)
+{
 	return "delete_user NÃO IMPLEMENTADO";
 }
 
@@ -62,6 +65,7 @@ Sistema::disconnect(int id) {
 	return "disconnect NÃO IMPLEMENTADO";
 }
 
+//checkin 2, otimo =)
 string 
 Sistema::create_server(int id, const string nome) {
     for (auto& serv : m_servidores)
