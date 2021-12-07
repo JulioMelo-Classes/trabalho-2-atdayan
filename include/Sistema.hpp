@@ -4,13 +4,17 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <utility>
 #include "Usuario.hpp"
+#include "Servidor.hpp"
 
 
 // Sistema deve concentrar todas as operações do Concordo
 class Sistema {
     private:
-        std::vector<Usuario> m_usuarios;
+        std::vector<Usuario*> m_usuarios;
+        std::vector<Servidor> m_servidores;
+        std::map<int, std::pair<unsigned int, unsigned int>> m_usuarios_logados;
 
   	public:
 

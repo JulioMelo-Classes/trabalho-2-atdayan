@@ -2,7 +2,8 @@
 
 using namespace std;
 
-Usuario::Usuario(string nome, string email, string senha) {
+Usuario::Usuario(unsigned int id, string nome, string email, string senha) {
+    m_id = id;
     m_nome = nome;
     m_email = email;
     m_senha = senha;
@@ -11,11 +12,6 @@ Usuario::Usuario(string nome, string email, string senha) {
 unsigned int
 Usuario::get_id() {
     return m_id;
-}
-
-void 
-Usuario::set_id(unsigned int id) {
-    m_id = id;
 }
 
 string

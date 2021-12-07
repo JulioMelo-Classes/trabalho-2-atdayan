@@ -10,14 +10,13 @@ class Usuario {
         std::string m_senha;
 
     public:
-        Usuario(std::string, std::string, std::string);
+        Usuario(unsigned int id, std::string nome, std::string email, std::string senha);
         unsigned int get_id();
-        void set_id(unsigned int);
         std::string get_nome();
-        void set_nome(std::string);
+        void set_nome(std::string nome);
         std::string get_email();
-        void set_email(std::string);
+        void set_email(std::string nome);
         std::string get_senha();
-        void set_senha(std::string);
+        void set_senha(std::string nome);
 };
 #endif //USUARIO_HPP
