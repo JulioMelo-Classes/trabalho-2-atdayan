@@ -1,0 +1,17 @@
+create-user golira@selva.com 123456 Gulira
+list-servers 1
+login golira@selva.com 123456
+list-servers 1
+create-server 1 zoo
+set-server-invite-code 1 zoo 123
+set-server-invite-code 1 zoo 
+set-server-invite-code 1 zoo 1233333
+set-server-invite-code 1 zoo banana
+enter-server 1 zoo
+create-server 1 savana
+create-server 1 selva
+create-server 1 pradaria
+list-servers 1
+remove-server 1 mafia
+remove-server 1 savana
+list-servers 1

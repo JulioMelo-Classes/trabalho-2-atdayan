@@ -1,0 +1,14 @@
+create-user alice@foo.com 111 alice
+create-user bob@foo.com 222 bob
+create-user carlos@foo.com 333 carlos
+login alice@foo.com 111
+login bob@foo.com 222
+login carlos@foo.com 333
+create-server 1 conversa
+create-server 2 reuniao
+enter-server 1 conversa
+enter-server 2 conversa
+enter-server 3 conversa
+list-servers 2
+leave-server 4 conversa
+leave-server 3 conversa

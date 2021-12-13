@@ -1,0 +1,26 @@
+create-user brasil@latam.br brasilia brasil
+create-user chile@latam.br santiago chile
+create-user australia@oceania.au canberra australia
+login brasil@latam.br brasilia
+login australia@oceania.au sydney
+login australia@oceania.au canberra
+create-server 1 conferencia
+create-server 1 tratados
+set-server-invite-code 1 tratados senhaehsenhaok
+enter-server 1 tratados
+enter-server 3 tratados
+enter-server 3 conferencia
+list-servers 2 
+login chile@latam.br santiago
+list-servers 2
+enter-server 2 tratados
+set-server-invite-code 2 conferencia 22222222
+create-server 2 guerra
+list-servers 3
+set-server-desc 3 guerra we should not fight mate
+remove-server 3 guerra
+set-server-desc 2 guerra apenas brincadeira
+remove-server 2 guerra
+remove-server 2 guerra
+enter-server 2 tratados
+enter-server 3 tratados 11111111
