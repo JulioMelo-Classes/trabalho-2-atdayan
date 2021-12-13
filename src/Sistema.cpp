@@ -7,12 +7,17 @@
 using namespace std;
 
 /* COMANDOS */
+Servidor* Sistema::find_server(const int id) {
+    for (auto &s : m_servidores)
+        if (s.get_id() == id)
+            return &s;
+    return nullptr;
+}
+
 Servidor* Sistema::find_server(const string &nome) {
-    for (auto &s_ref : m_servidores) {
-        if (s_ref.get_nome().compare(nome) == 0) {
-            return &s_ref;
-        }
-    }
+    for (auto &s : m_servidores)
+        if (s.get_nome() == nome)
+            return &s;
     return nullptr;
 }
 
@@ -240,7 +245,8 @@ string Sistema::enter_server(int id, const string nome, const string codigo) {
         return "Código de convite inválido";
 
     u = find_user(id);
-    serv->get_participantes().push_back(u); 
+    serv->set_participantes(u); 
+
     m_usuarios_logados[u->get_id()] = make_pair(serv->get_id(), 0);
 
     return "Entrou no servidor '" + nome + "' com sucesso";
@@ -252,24 +258,39 @@ string Sistema::leave_server(int id, const string nome) {
         return "Usuário não está logado!";
 
     Servidor *serv = find_server(nome);
+
     if (serv == nullptr)
         return "Servidor '" + nome + "' não existe";
 
     if (m_usuarios_logados.at(id).first == 0)
         return "Você não está em um servidor";
     
-    m_usuarios_logados[id] = make_pair(0, 0);
+    if (m_usuarios_logados.at(id).first == serv->get_id())
+        m_usuarios_logados[id] = make_pair(0, 0);
 
-    for (auto &log : m_usuarios_logados) {
-        auto user = find_user(log.first);
-        cout << "usuario: "<<user->get_nome()<<" está com o par: "<<m_usuarios_logados[user->get_id()].first << "," << m_usuarios_logados[user->get_id()].second << endl;
-    }
+    serv->remove_participante(find_user(id));
 
     return "Saindo do servidor '" + nome + "'";
 }
 
 string Sistema::list_participants(int id) {
-	return "list_participants NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    unsigned int serv_id = m_usuarios_logados[id].first;
+
+    if (serv_id == 0)
+        return "Usuário não está visualizando nenhum servidor";
+
+    Servidor *serv = find_server(serv_id);
+
+    string participantes = "--Participantes-- \n";
+    for (auto u : serv->get_participantes())
+        participantes += "  " + u->get_nome() + "\n"; 
+    participantes += "--------------";
+        
+    return participantes;
 }
 
 string Sistema::list_channels(int id) {

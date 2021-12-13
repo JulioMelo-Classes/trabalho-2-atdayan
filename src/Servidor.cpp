@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "Servidor.hpp"
 #include "Usuario.hpp"
 
@@ -45,4 +46,13 @@ void Servidor::set_codigo_convite(string codigo_convite) {
 
 vector<Usuario*> Servidor::get_participantes() {
     return m_participantes;
+}
+
+void Servidor::set_participantes(Usuario *usuario) {
+    m_participantes.push_back(usuario);
+}
+
+void Servidor::remove_participante(Usuario *usuario) {
+    auto it = find(m_participantes.begin(), m_participantes.end(), usuario);
+    m_participantes.erase(it);
 }

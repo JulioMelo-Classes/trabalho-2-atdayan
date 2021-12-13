@@ -20,6 +20,12 @@ class Sistema {
 
   	public:
 
+        /*! Retorna o servidor que tem o id igual ao passado por parâmetro
+            @param id o id de um servidor
+            @return um servidor que tenha esse id ou uma referência nula
+        */
+        Servidor* find_server(const int id);
+
         /*! Retorna o servidor que tem como nome a string passada como parâmetro
             @param nome o nome de um servidor
             @return um servidor que tenha esse nome ou uma referência nula

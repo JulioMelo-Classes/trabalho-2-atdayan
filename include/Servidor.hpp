@@ -23,5 +23,7 @@ class Servidor {
         std::string get_codigo_convite();
         void set_codigo_convite(std::string);
         std::vector<Usuario*> get_participantes();
+        void set_participantes(Usuario *usuario);
+        void remove_participante(Usuario *usuario);
 };
 #endif //SERVIDOR_HPP
