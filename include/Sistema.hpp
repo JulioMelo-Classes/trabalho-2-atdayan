@@ -18,6 +18,12 @@ class Sistema {
 
   	public:
 
+        /*! Retorna o servidor que tem como nome a string passada como parâmetro
+            @param nome o nome de um servidor
+            @return um servidor que tenha esse nome ou uma referência nula
+        */
+        Servidor* find_server(const std::string &nome);
+
         /*! Retorna o usuário que tem o id igual ao id informado
             @param id o id do usuário que se deseja encontrar
             @return a referência de o usuário que tem o id informado ou um ponteiro nulo

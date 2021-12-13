@@ -7,6 +7,16 @@
 using namespace std;
 
 /* COMANDOS */
+Servidor*
+Sistema::find_server(const string &nome) {
+    for (auto &s_ref : m_servidores) {
+        if (s_ref.get_nome().compare(nome) == 0) {
+            return &s_ref;
+        }
+    }
+    return nullptr;
+}
+
 Usuario*
 Sistema::find_user(const int id) {
     for (auto &u : m_usuarios)
@@ -78,6 +88,10 @@ Sistema::disconnect(int id) {
 
 std::string 
 Sistema::create_server(int id, const string nome) {
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
     for (auto& serv : m_servidores)
         if (serv.get_nome().compare(nome) == 0)
             return "Servidor com esse nome já existe";
@@ -93,47 +107,40 @@ Sistema::create_server(int id, const string nome) {
     Servidor servidor {s_id, u, nome};
     m_servidores.push_back(servidor);
 
-	return "Servidor criado";
+	return "Servidor '" + nome + "' criado";
 }
 
-string 
+std::string 
 Sistema::set_server_desc(int id, const string nome, const string descricao) {
 
-    Servidor *serv = nullptr;
-    for (auto& s_ref : m_servidores) {
-        if (s_ref.get_nome().compare(nome) == 0) {
-            serv = &s_ref;
-            break;
-        }
-    }
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    Servidor *serv = find_server(nome);
 
     if (serv == nullptr)
-        return "Servidor ‘" + nome + "’ não existe";
+        return "Servidor '" + nome + "' não existe";
 
     if (serv->get_dono()->get_id() == id) {
         serv->set_descricao(descricao); 
-        return "Descrição do servidor ‘" + nome + "’ modificada!";
+        return "Descrição do servidor '" + nome + "' modificada!";
     }
 
 	return "Você não pode alterar a descrição de um servidor que não foi criado por você";
 }
 
-string 
+std::string 
 Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
 
-    Servidor *serv = nullptr;
-    for (auto& s_ref : m_servidores) {
-        if (s_ref.get_nome().compare(nome) == 0) {
-            serv = &s_ref;
-            break;
-        }
-    }
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    Servidor *serv = find_server(nome);
 
     if (serv == nullptr)
-        return "Servidor ‘" + nome + "’ não existe";
+        return "Servidor '" + nome + "' não existe";
 
     if (serv->get_dono()->get_id() == id) {
-
         if (codigo.empty()) {
             serv->set_codigo_convite(""); 
             return "Código de convite do servidor '" + nome + "' removido!";
@@ -149,51 +156,98 @@ Sistema::set_server_invite_code(int id, const string nome, const string codigo) 
 
 std::string 
 Sistema::list_servers(int id) {
-	return "list_servers NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    if (m_servidores.empty())
+        return "Nenhum servidor para exibir";
+
+    string servidores = "--Servidores-- \n";
+    for (auto &serv : m_servidores) {
+        servidores += "  " + serv.get_nome() + "\n";
+    }
+    servidores += "--------------";
+
+	return servidores;
 }
 
-string 
+std::string 
 Sistema::remove_server(int id, const string nome) {
-	return "remove_server NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    Servidor *serv = find_server(nome);
+
+    if (serv == nullptr)
+        return "Servidor '" + nome + "' não existe";
+
+    if (serv->get_dono()->get_id() != id)
+        return "Você não é o dono do servidor '" + nome + "'";       
+
+    m_servidores.erase((vector<Servidor>::iterator) serv);
+
+    for (auto &log : m_usuarios_logados)
+        if (log.second.first == serv->get_id())
+            log.second = make_pair(0,0);
+    
+    return "Servidor '" + nome + "' removido";
 }
 
-string 
+std::string 
 Sistema::enter_server(int id, const string nome, const string codigo) {
 
-    Servidor *serv;
-    for (auto& s_ref : m_servidores) {
-        if (s_ref.get_nome().compare(nome) == 0) {
-            serv = &s_ref;
-            break;
-        }
-    }
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    Servidor *serv = find_server(nome);
     
-    if (serv->get_dono()->get_id() == id)  {
-        serv->get_participantes().push_back(serv->get_dono()); 
-        m_usuarios_logados.at(id) = make_pair(serv->get_id(), 0);
-        return "Entrou no servidor com sucesso";
-    }
+    if (serv == nullptr)
+        return "Servidor '" + nome + "' não existe";
 
-    Usuario *u;
-    for (auto u_ref : m_usuarios)
-        if (u_ref->get_id() == id)
-            u = u_ref;
+    Usuario *u = serv->get_dono();
 
-    bool sem_convite = serv->get_codigo_convite().empty();
-    bool com_convite = (serv->get_codigo_convite().compare(codigo) == 0);
-
-    if (sem_convite || com_convite) {
+    if (u->get_id() == id) {
         serv->get_participantes().push_back(u); 
-        m_usuarios_logados.emplace(u->get_id(), make_pair(serv->get_id(), 0));
-        return "Entrou no servidor com sucesso";
+        m_usuarios_logados[u->get_id()] = make_pair(serv->get_id(), 0);
+        return "Entrou no servidor '" + nome + "' com sucesso";
     }
-    return "Servidor requer código de convite";
 
+    if (!serv->get_codigo_convite().empty() && codigo.empty())
+        return "Servidor requer código de convite";
+
+    if (serv->get_codigo_convite() != codigo)
+        return "Código de convite inválido";
+
+    u = find_user(id);
+    serv->get_participantes().push_back(u); 
+    m_usuarios_logados[u->get_id()] = make_pair(serv->get_id(), 0);
+
+    return "Entrou no servidor '" + nome + "' com sucesso";
 }
 
-string 
+std::string 
 Sistema::leave_server(int id, const string nome) {
-	return "leave_server NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    Servidor *serv = find_server(nome);
+    if (serv == nullptr)
+        return "Servidor '" + nome + "' não existe";
+
+    if (m_usuarios_logados.at(id).first == 0)
+        return "Você não está em um servidor";
+    
+    m_usuarios_logados[id] = make_pair(0, 0);
+
+    for (auto &log : m_usuarios_logados) {
+        auto user = find_user(log.first);
+        cout << "usuario: "<<user->get_nome()<<" está com o par: "<<m_usuarios_logados[user->get_id()].first << "," << m_usuarios_logados[user->get_id()].second << endl;
+    }
+
+    return "Saindo do servidor '" + nome + "'";
 }
 
 std::string 
