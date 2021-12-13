@@ -7,8 +7,7 @@
 using namespace std;
 
 /* COMANDOS */
-Servidor*
-Sistema::find_server(const string &nome) {
+Servidor* Sistema::find_server(const string &nome) {
     for (auto &s_ref : m_servidores) {
         if (s_ref.get_nome().compare(nome) == 0) {
             return &s_ref;
@@ -17,21 +16,18 @@ Sistema::find_server(const string &nome) {
     return nullptr;
 }
 
-Usuario*
-Sistema::find_user(const int id) {
+Usuario* Sistema::find_user(const int id) {
     for (auto &u : m_usuarios)
         if (u->get_id() == id)
             return u;
     return nullptr;
 }
 
-std::string 
-Sistema::quit() {
+string Sistema::quit() {
     return "Saindo...";
 }
 
-std::string 
-Sistema::create_user (const string email, const string senha, const string nome) {
+string Sistema::create_user (const string email, const string senha, const string nome) {
 
     for (Usuario *u : m_usuarios) 
         if (u->get_email().compare(email) == 0) 
@@ -46,13 +42,11 @@ Sistema::create_user (const string email, const string senha, const string nome)
 	return "Usuário " + nome + " criado";
 }
 
-std::string 
-Sistema::delete_user (const std::string email, const std::string senha){
+string Sistema::delete_user (const std::string email, const std::string senha){
 	return "delete_user NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::login(const string email, const string senha) {
+string Sistema::login(const string email, const string senha) {
 
     Usuario *u = nullptr;
     for (auto &u_ref : m_usuarios) {
@@ -73,8 +67,7 @@ Sistema::login(const string email, const string senha) {
     return "Senha ou usuário inválidos!";
 }
 
-std::string 
-Sistema::disconnect(int id) {
+string Sistema::disconnect(int id) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -86,8 +79,7 @@ Sistema::disconnect(int id) {
 	return "Desconectando usuário " + find_user(id)->get_email();
 }
 
-std::string 
-Sistema::create_server(int id, const string nome) {
+string Sistema::create_server(int id, const string nome) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -110,8 +102,7 @@ Sistema::create_server(int id, const string nome) {
 	return "Servidor '" + nome + "' criado";
 }
 
-std::string 
-Sistema::set_server_desc(int id, const string nome, const string descricao) {
+string Sistema::set_server_desc(int id, const string nome, const string descricao) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -129,8 +120,7 @@ Sistema::set_server_desc(int id, const string nome, const string descricao) {
 	return "Você não pode alterar a descrição de um servidor que não foi criado por você";
 }
 
-std::string 
-Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
+string Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -154,8 +144,7 @@ Sistema::set_server_invite_code(int id, const string nome, const string codigo) 
 	return "Você não pode alterar o convite de um servidor que não foi criado por você";
 }
 
-std::string 
-Sistema::list_servers(int id) {
+string Sistema::list_servers(int id) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -172,8 +161,7 @@ Sistema::list_servers(int id) {
 	return servidores;
 }
 
-std::string 
-Sistema::remove_server(int id, const string nome) {
+string Sistema::remove_server(int id, const string nome) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -195,8 +183,7 @@ Sistema::remove_server(int id, const string nome) {
     return "Servidor '" + nome + "' removido";
 }
 
-std::string 
-Sistema::enter_server(int id, const string nome, const string codigo) {
+string Sistema::enter_server(int id, const string nome, const string codigo) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -227,8 +214,7 @@ Sistema::enter_server(int id, const string nome, const string codigo) {
     return "Entrou no servidor '" + nome + "' com sucesso";
 }
 
-std::string 
-Sistema::leave_server(int id, const string nome) {
+string Sistema::leave_server(int id, const string nome) {
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
@@ -250,43 +236,35 @@ Sistema::leave_server(int id, const string nome) {
     return "Saindo do servidor '" + nome + "'";
 }
 
-std::string 
-Sistema::list_participants(int id) {
+string Sistema::list_participants(int id) {
 	return "list_participants NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::list_channels(int id) {
+string Sistema::list_channels(int id) {
 	return "list_channels NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::create_channel(int id, const string nome) {
+string Sistema::create_channel(int id, const string nome) {
 	return "create_channel NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::remove_channel(int id, const string nome) {
+string Sistema::remove_channel(int id, const string nome) {
 	return "remove_channel NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::enter_channel(int id, const string nome) {
+string Sistema::enter_channel(int id, const string nome) {
 	return "enter_channel NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::leave_channel(int id) {
+string Sistema::leave_channel(int id) {
 	return "leave_channel NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::send_message(int id, const string mensagem) {
+string Sistema::send_message(int id, const string mensagem) {
 	return "send_message NÃO IMPLEMENTADO";
 }
 
-std::string 
-Sistema::list_messages(int id) {
+string Sistema::list_messages(int id) {
 	return "list_messages NÃO IMPLEMENTADO";
 }
 
