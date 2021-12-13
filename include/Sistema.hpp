@@ -18,6 +18,12 @@ class Sistema {
 
   	public:
 
+        /*! Retorna o usuário que tem o id igual ao id informado
+            @param id o id do usuário que se deseja encontrar
+            @return a referência de o usuário que tem o id informado ou um ponteiro nulo
+        */
+        Usuario* find_user(const int id);
+
 		/*! Encerra o funcionamento do Concordo, o programa termina ao executar este comando.
 			@return uma string com a mensagem "Saindo.."
 		*/
