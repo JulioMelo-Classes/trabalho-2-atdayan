@@ -23,48 +23,84 @@ Usuario* Sistema::find_user(const int id) {
     return nullptr;
 }
 
+Usuario* Sistema::find_user(const string &email) {
+    for (auto &u : m_usuarios)
+        if (u->get_email() == email)
+            return u;
+    return nullptr;
+}
+
+unsigned int Sistema::get_free_id(vector<unsigned int> &container) {
+
+    if (container.empty()) {
+        container.push_back(1);
+        return 1;
+    }
+
+    for (unsigned int i = 0; i < container.size(); i++) {
+        if (container[i] == 0) {
+            container[i] = i + 1; 
+            return container[i]; 
+        }
+    }
+    
+    container.push_back(container.back() + 1);
+    return container.back();
+}
+
 string Sistema::quit() {
     return "Saindo...";
 }
 
-string Sistema::create_user (const string email, const string senha, const string nome) {
+string Sistema::create_user(const string email, const string senha, const string nome) {
 
-    for (Usuario *u : m_usuarios) 
-        if (u->get_email().compare(email) == 0) 
-            return "Usuário já existe!";
+    Usuario *u = find_user(email);
 
-    unsigned int id;
-    m_usuarios.empty() ? id = 1 : id = m_usuarios.back()->get_id() + 1;
+    if (u != nullptr)
+        return "Usuário já existe!";
 
+    unsigned int id = get_free_id(m_ids_usuarios);
+    
     Usuario *novo_usuario = new Usuario {id, nome, email, senha}; 
     m_usuarios.push_back(novo_usuario);
     
 	return "Usuário " + nome + " criado";
 }
 
-string Sistema::delete_user (const std::string email, const std::string senha){
-	return "delete_user NÃO IMPLEMENTADO";
+string Sistema::delete_user(const std::string email, const std::string senha) {
+
+    Usuario *u = find_user(email);
+
+    if (u == nullptr || u->get_senha() != senha)
+        return "Senha ou usuário inválidos";
+
+    for (auto &serv : m_servidores) 
+        if (serv.get_dono()->get_id() == u->get_id())
+            remove_server(u->get_id(), serv.get_nome());
+
+    m_ids_usuarios[u->get_id()-1] = 0;
+
+    auto it = find(m_usuarios.begin(), m_usuarios.end(), u);
+
+    m_usuarios.erase(it);
+    delete u;
+
+	return "Usuário '" + email + "' removido";
 }
 
 string Sistema::login(const string email, const string senha) {
 
-    Usuario *u = nullptr;
-    for (auto &u_ref : m_usuarios) {
-        if (u_ref->get_email().compare(email) == 0) {
-            u = u_ref;
-            break;
-        }
-    }
+    Usuario *u = find_user(email);
 
-    if (u == nullptr)
-        return "Usuário não cadastrado";
+    if (u == nullptr || u->get_senha() != senha)
+        return "Senha ou usuário inválidos";
+
+    if (m_usuarios_logados.count(u->get_id()) > 0)
+        return "Usuário já está logado";
+
     
-    if ((u->get_email().compare(email) == 0) && (u->get_senha().compare(senha) == 0)) {
-        m_usuarios_logados[u->get_id()] = make_pair(0, 0);
-        return "Logado como " + email;
-    }
-    
-    return "Senha ou usuário inválidos!";
+    m_usuarios_logados[u->get_id()] = make_pair(0, 0);
+    return "Logado como " + email;
 }
 
 string Sistema::disconnect(int id) {
@@ -88,13 +124,9 @@ string Sistema::create_server(int id, const string nome) {
         if (serv.get_nome().compare(nome) == 0)
             return "Servidor com esse nome já existe";
 
-    Usuario *u;
-    for (auto& u_ref : m_usuarios)
-        if (u_ref->get_id() == id) 
-            u = u_ref;
+    Usuario *u = find_user(id);
 
-    unsigned int s_id;
-    m_servidores.empty() ? s_id = 1 : s_id = m_servidores.back().get_id() + 1;
+    unsigned int s_id = get_free_id(m_ids_servidores);
 
     Servidor servidor {s_id, u, nome};
     m_servidores.push_back(servidor);

@@ -11,6 +11,7 @@ login golira@gmail.com 123456
 login golira@gmail.com 
 login golira@selva.com 123456
 login gifara@selva.com 111111
+login golira@selva.com 123456
 disconnect 5
 create-server 1 zoo
 create-server 2 savana
@@ -18,3 +19,5 @@ disconnect 4
 login saparinho@cidade.com cee3333
 create-server 3 ninho
 disconnect 1
+delete-user carrocho@cidade.com 123456
+create-user cojura@floresta.com 00001 C0jura

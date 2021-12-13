@@ -15,6 +15,8 @@ class Sistema {
         std::vector<Usuario*> m_usuarios;
         std::vector<Servidor> m_servidores;
         std::map<int, std::pair<unsigned int, unsigned int>> m_usuarios_logados;
+        std::vector<unsigned int> m_ids_usuarios;
+        std::vector<unsigned int> m_ids_servidores;
 
   	public:
 
@@ -29,6 +31,18 @@ class Sistema {
             @return a referência de o usuário que tem o id informado ou um ponteiro nulo
         */
         Usuario* find_user(const int id);
+
+        /*! Retorna o usuário que tem o email igual ao email informado
+            @param email o email do usuário que se deseja encontrar
+            @return a referência de o usuário que tem o email informado ou um ponteiro nulo
+        */
+        Usuario* find_user(const std::string &email);
+
+        /*! Consulta os ids de um container deste tipo e devolve um id disponível
+            @param container uma referencia para um container de ids 
+            @return um id disponível para uso
+        */
+        unsigned int get_free_id(std::vector<unsigned int> &container);
 
 		/*! Encerra o funcionamento do Concordo, o programa termina ao executar este comando.
 			@return uma string com a mensagem "Saindo.."
