@@ -1,0 +1,28 @@
+create-user a@abc.com 1 alice
+create-user b@abc.com 1 bob
+create-user c@abc.com 1 carla
+create-user d@abc.com 1 douglas
+create-user e@abc.com 1 eliza
+create-user f@abc.com 1 fabio
+create-user g@abc.com 1 gabi
+create-user h@abc.com 1 helio
+create-user i@abc.com 1 iara
+create-user j@abc.com 1 joao
+login a@abc.com 1
+login b@abc.com 1
+login c@abc.com 1
+login d@abc.com 1
+login e@abc.com 1
+create-server 3 escola
+set-server-invite-code 3 escola 5aseriec
+list-participants 3
+enter-server 1 escola
+enter-server 1 escola 5aseriec
+enter-server 2 escola 5aseriec
+enter-server 3 escola 5aseriec
+enter-server 4 escola 5aseriec
+enter-server 5 escola 5aseriec
+list-participants 1
+leave-server 4 escola
+list-participants 1
+list-participants 4
