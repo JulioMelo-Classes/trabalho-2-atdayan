@@ -1,16 +1,8 @@
-# Base para a atividade 02 de LP1
-
-Use esse esqueleto de classes para iniciar a terceira atividade.
-
-Existe um executor que faz a interpretação dos comandos e executa o método correto do sistema.
-
+# Concordo - Projeto 02 (LP1)
+- Autor: Arthur Dayan Moura da Costa
+- Email: adayanmc@gmail.com
+- Turma: T01
 ## Para compilar
-
-Com makefiles:
-```console
-mkdir build
-make
-```
 
 Com cmake:
 ```console
@@ -20,17 +12,18 @@ cmake ..
 cmake --build .
 ```
 
-Escolha uma das duas formas de build e ignore a outra.
-
 ## Para executar
-Você pode rodar o sistema e em logo depois digitar os comandos seguidos de ENTER
+Você pode rodar o sistema e inserir os comandos seguidos de ENTER
 ```console
 cd build
 ./concordo
 ```
 
-Ou pode criar um arquivo de texto com uma lista de comandos (um por linha) e executar o sistema redirecionando esse arquivo como entrada padrão:
+Já está disponínel em `data` alguns arquivos de teste, que são sequências de comandos para serem interpretados pelo Concordo. Faça:
 ```console
 cd build
-./concordo < ../data/script_comandos.txt
+./concordo < ../data/arquivo_de_teste
 ```
+## Funcionalidades não implementadas
+- Manipulação de Mensagens está incompleta;
+- Documentação incompleta.
