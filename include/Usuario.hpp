@@ -10,7 +10,8 @@ class Usuario {
         std::string m_senha;
 
     public:
-        Usuario(unsigned int id, std::string nome, std::string email, std::string senha);
+        Usuario(unsigned int id, std::string nome, 
+                std::string email, std::string senha);
         unsigned int get_id();
         std::string get_nome();
         void set_nome(std::string nome);

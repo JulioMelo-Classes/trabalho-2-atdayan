@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include "CanalTexto.hpp"
+#include "Mensagem.hpp"
 #include "Sistema.hpp"
 #include "Usuario.hpp"
 
@@ -54,6 +56,9 @@ unsigned int Sistema::get_free_id(vector<unsigned int> &container) {
 }
 
 string Sistema::quit() {
+    for (auto &u : m_usuarios)
+        delete u;
+
     return "Saindo...";
 }
 
@@ -230,6 +235,9 @@ string Sistema::enter_server(int id, const string nome, const string codigo) {
     if (serv == nullptr)
         return "Servidor '" + nome + "' não existe";
 
+    if (m_usuarios_logados[id].first == serv->get_id())
+        return "Usuário já está neste servidor";
+
     Usuario *u = serv->get_dono();
 
     if (u->get_id() == id) {
@@ -294,26 +302,151 @@ string Sistema::list_participants(int id) {
 }
 
 string Sistema::list_channels(int id) {
-	return "list_channels NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    unsigned int serv_id = m_usuarios_logados[id].first;
+
+    if (serv_id == 0)
+        return "Usuário não está visualizando nenhum servidor";
+
+    Servidor *serv = find_server(serv_id);
+
+    string canais = "--Canais-- \n";
+    for (auto &c : serv->get_canais_texto())
+        canais += "  " + c.get_nome() + "\n"; 
+    canais += "--------------";
+        
+    return canais;
 }
 
 string Sistema::create_channel(int id, const string nome) {
-	return "create_channel NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+    
+    unsigned int serv_id = m_usuarios_logados[id].first;
+
+    if (serv_id == 0)
+        return "Usuário não está visualizando nenhum servidor";
+
+    Servidor *serv = find_server(serv_id);
+
+    for (auto &canal : serv->get_canais_texto()) 
+        if (canal.get_nome() == nome)
+            return "Canal de texto '" + nome + "' já existe";
+    
+    unsigned int canal_id = get_free_id(serv->get_id_canais_texto());
+
+    Usuario *dono = find_user(id);
+    CanalTexto canal = {canal_id, dono, nome};
+
+    serv->add_canais_texto(canal);
+
+    return "Canal de texto '" + nome + "' criado";
 }
 
 string Sistema::remove_channel(int id, const string nome) {
-	return "remove_channel NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+    
+    unsigned int id_serv_atual = m_usuarios_logados[id].first;
+    unsigned int id_canal_atual = m_usuarios_logados[id].second;
+
+    Servidor *serv = find_server(id_serv_atual);
+
+    CanalTexto *canal = serv->encontra_canal(id_canal_atual);
+
+    if (canal == nullptr)
+        return "Canal não existente";
+
+    if (id_canal_atual == 0)
+        return "Usuário não está em nenhum canal";
+
+    if (id_serv_atual== 0)
+        return "Usuário não está visualizando nenhum servidor";
+
+    
+    bool eh_dono_servidor = (serv->get_dono()->get_id() == id);
+    bool eh_dono_canal = (canal->get_dono()->get_id() == id);
+
+    if (eh_dono_servidor || eh_dono_canal) {
+        for (auto &u : m_usuarios_logados) 
+            if (u.second.second == canal->get_id())
+                u.second.second = 0;
+        serv->remove_canal_texto(canal);
+        serv->libera_id_canais_texto(id_canal_atual);
+        return "Canal de texto '" + nome + "' deletado";
+    }
+    
+    return "Usuário não pode deletar esse canal";
 }
 
 string Sistema::enter_channel(int id, const string nome) {
-	return "enter_channel NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    unsigned int serv_id = m_usuarios_logados[id].first;
+    unsigned int canal_id_atual = m_usuarios_logados[id].second;
+
+    if (serv_id == 0)
+        return "Usuário não está visualizando nenhum servidor";
+
+    Servidor *serv = find_server(serv_id);
+
+    CanalTexto *canal = serv->encontra_canal(nome);
+
+    if (canal == nullptr)
+        return "Canal '" + nome + "' não existe";
+    
+    if (canal_id_atual == canal->get_id())
+        return "Usuário já está no canal '" + nome + "'";
+
+    m_usuarios_logados[id].second = canal->get_id();
+
+    return "Entrou no canal '" + nome + "'";
 }
 
 string Sistema::leave_channel(int id) {
-	return "leave_channel NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    unsigned int id_canal_atual = m_usuarios_logados[id].second;
+
+    if (id_canal_atual == 0)
+        return "Usuário não está em nenhum canal";
+
+    unsigned int serv_id = m_usuarios_logados[id].first;
+    Servidor *serv = find_server(serv_id);
+
+    CanalTexto *canal = serv->encontra_canal(id_canal_atual);
+
+    if (canal == nullptr)
+        return "Canal não existente";
+
+    m_usuarios_logados[id].second = 0;
+    return "Saindo do canal '" + canal->get_nome() + "'";
 }
 
 string Sistema::send_message(int id, const string mensagem) {
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    unsigned int serv_id = m_usuarios_logados[id].first;
+    unsigned int id_canal_atual = m_usuarios_logados[id].second;
+    
+    if (serv_id == 0)
+        return "Usuário não está em nenhum servidor";
+    if (id_canal_atual == 0)
+        return "Usuário não está em nenhum canal";
+    
+    Usuario *u = find_user(id);
+    
 	return "send_message NÃO IMPLEMENTADO";
 }
 
