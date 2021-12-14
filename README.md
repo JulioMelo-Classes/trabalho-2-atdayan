@@ -2,6 +2,9 @@
 - Autor: Arthur Dayan Moura da Costa
 - Email: adayanmc@gmail.com
 - Turma: T01
+
+O Concordo é uma implementação simples do backend do Discord, funciona recebendo comandos pela entrada padrão.
+
 ## Para compilar
 
 Com cmake:
