@@ -15,3 +15,4 @@ list-servers 1
 remove-server 1 mafia
 remove-server 1 savana
 list-servers 1
+quit

@@ -12,3 +12,4 @@ enter-server 3 conversa
 list-servers 2
 leave-server 4 conversa
 leave-server 3 conversa
+quit

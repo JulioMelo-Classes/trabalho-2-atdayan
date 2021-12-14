@@ -21,3 +21,4 @@ create-server 3 ninho
 disconnect 1
 delete-user carrocho@cidade.com 123456
 create-user cojura@floresta.com 00001 C0jura
+quit

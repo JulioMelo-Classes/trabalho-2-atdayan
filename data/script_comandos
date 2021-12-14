@@ -22,11 +22,9 @@ set-server-invite-code 0 servidor-legal
 set-server-invite-code 0 servidor-inexistente 123
 set-server-invite-code 0 servidor-inexistente
 list-servers 0
-
 enter-server 0 servidor-legal
 enter-server 1 servidor-legal
 create-channel 0 CANAL3
-
 list-channels 0
 enter-channel 0 CANAL3
 enter-channel 1 CANAL3
@@ -39,7 +37,6 @@ disconnect 0
 enter-channel 1 CANAL2
 send-message 1 Oi pessoal do Canal 2!
 list-messages 1
-
 login isaacfranco@imd.ufrn.br senhalegal
 list-servers 0
 remove-server 0 servidor-inexistente
