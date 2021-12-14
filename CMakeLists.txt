@@ -8,10 +8,12 @@ include_directories( include )
 
 # Cria um executável com nome "concordo", adiciona neste executável os arquivos src/concordo.cpp src/sistema.cpp src/executor.cpp
 add_executable( concordo
+                src/CanalTexto.cpp
                 src/Concordo.cpp
-                src/Sistema.cpp 
 				src/Executor.cpp
-				src/Usuario.cpp
-                src/Servidor.cpp)
+                src/Mensagem.cpp
+                src/Servidor.cpp
+                src/Sistema.cpp
+				src/Usuario.cpp)
 
 # The end
