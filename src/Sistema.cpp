@@ -446,11 +446,30 @@ string Sistema::send_message(int id, const string mensagem) {
         return "Usuário não está em nenhum canal";
     
     Usuario *u = find_user(id);
+
+    Mensagem m (get_free_id(m_ids_mensagens), u, mensagem);
     
-	return "send_message NÃO IMPLEMENTADO";
+    Servidor *serv = find_server(serv_id);
+    serv->encontra_canal(id_canal_atual)->add_mensagem(m);
+    
+	return "Nova mensagem em " + serv->get_nome() + "("+serv->encontra_canal(id_canal_atual)->get_nome()+")";
 }
 
 string Sistema::list_messages(int id) {
-	return "list_messages NÃO IMPLEMENTADO";
+
+    if (m_usuarios_logados.count(id) == 0)
+        return "Usuário não está logado!";
+
+    unsigned int serv_id = m_usuarios_logados[id].first;
+    unsigned int id_canal_atual = m_usuarios_logados[id].second;
+    
+    if (serv_id == 0)
+        return "Usuário não está em nenhum servidor";
+    if (id_canal_atual == 0)
+        return "Usuário não está em nenhum canal";
+
+    Servidor *serv = find_server(serv_id);
+    CanalTexto *canal = serv->
+    
 }
 

@@ -17,6 +17,7 @@ class Sistema {
         std::map<int, std::pair<unsigned int, unsigned int>> m_usuarios_logados;
         std::vector<unsigned int> m_ids_usuarios;
         std::vector<unsigned int> m_ids_servidores;
+        std::vector<unsigned int> m_ids_mensagens;
 
   	public:
 

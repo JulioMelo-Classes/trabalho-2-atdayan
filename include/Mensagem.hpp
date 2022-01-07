@@ -11,8 +11,8 @@ class Mensagem {
         Usuario *m_enviada_por;
         std::string m_conteudo;
     public:
-        Mensagem(unsigned int id, std::string data_hora, 
-                Usuario *enviada_por, std::string conteudo);
+        Mensagem(unsigned int id, Usuario *enviada_por,
+                std::string conteudo);
         unsigned int get_id();
         std::string get_data_hora();
         Usuario* get_enviada_por();
