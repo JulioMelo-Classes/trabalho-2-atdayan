@@ -26,6 +26,27 @@ string Servidor::participantes() {
     return part;
 }
 
+bool Servidor::eh_participante(Usuario *usuario) {
+    if (m_participantes.empty())
+        return false;
+
+    auto u_it = std::find(m_participantes.begin(), m_participantes.end(), usuario);
+    if (u_it == m_participantes.end())
+        return false;
+    
+    return true;
+}
+
+void Servidor::invalidar_participante(Usuario *usuario) {
+    if (usuario == m_dono)
+        m_dono = nullptr;
+    for (auto &c : m_canais_texto) {
+        auto msgs = c.mensagens_autor(usuario);
+        for (auto &m : msgs)
+            m->invalidar_autor();
+    }
+}
+
 void Servidor::add_canal_texto(CanalTexto canal) {
     m_canais_texto.push_back(canal);
 }
@@ -88,16 +109,6 @@ unsigned int Servidor::gerar_id_canal() {
 
 void Servidor::liberar_id_canal(unsigned int id) {
     std::replace(m_ids_canais.begin(), m_ids_canais.end(), id, 0u);
-}
-
-void Servidor::invalidar_usuario(Usuario *usuario) {
-    if (usuario == m_dono)
-        m_dono = nullptr;
-    for (auto &c : m_canais_texto) {
-        auto msgs = c.mensagens_autor(usuario);
-        for (auto &m : msgs)
-            m->invalidar_autor();
-    }
 }
 
 unsigned int Servidor::get_id() {

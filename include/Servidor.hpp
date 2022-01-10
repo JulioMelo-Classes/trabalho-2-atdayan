@@ -41,6 +41,19 @@ class Servidor {
         */
         std::string participantes();
 
+        /*! Verifica se o usuário informado é participante do servidor
+            @param usuario uma referência ao usuário que se deseja verificar
+            @return um valor booleano indicando se participa ou não
+        */
+        bool eh_participante(Usuario *usuario);
+
+        /*! Invalida o usuário no servidor, atribuindo o status 
+            de usuário deletado em suas mensagens e canais. Caso
+            também seja dono do servidor, é atribuída uma referência nula
+            @param usuario o usuário a ser invalidado
+        */
+        void invalidar_participante(Usuario *usuario);
+
         /*! Adiciona um novo canal de texto no servidor
             @param canal um objeto CanalTexto para ser adicionado
         */
@@ -81,13 +94,6 @@ class Servidor {
             @param id id do canal deletado
         */
         void liberar_id_canal(unsigned int id);
-
-        /*! Invalida o usuário no servidor, atribuindo o status 
-            de usuário deletado em suas mensagens e canais. Caso
-            também seja dono do servidor, é atribuída uma referência nula
-            @param usuario o usuário a ser invalidado
-        */
-        void invalidar_usuario(Usuario *usuario);
 
         /*! Getter do id
             @return o valor do atributo m_id

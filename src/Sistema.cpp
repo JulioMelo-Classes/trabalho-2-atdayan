@@ -92,7 +92,7 @@ string Sistema::create_user(const string email, const string senha, const string
     Usuario *novo_usuario = new Usuario {id, nome, email, senha}; 
     m_usuarios.push_back(novo_usuario);
     
-	return "Usuário " + nome + " criado";
+	return "Usuário " + nome + " criado [id: " + std::to_string(id) + "]";
 }
 
 string Sistema::delete_user(const std::string email, const std::string senha) {
@@ -108,7 +108,7 @@ string Sistema::delete_user(const std::string email, const std::string senha) {
         return "Usuário não está logado!";
 
     for (auto &s : m_servidores)
-        s.invalidar_usuario(u);
+        s.invalidar_participante(u);
 
     m_usuarios_logados.erase(u->get_id());
 
@@ -213,7 +213,7 @@ string Sistema::list_servers(int id) {
     if (m_servidores.empty())
         return "Nenhum servidor para exibir";
 
-    string servidores = "";
+    string servidores = "[Servidores]\n";
     for (auto &serv : m_servidores)
         servidores += serv.get_nome() + "\n";
 
@@ -260,7 +260,7 @@ string Sistema::enter_server(int id, const string nome, const string codigo) {
     if (u->get_id() == id) {
         serv->adicionar_participante(u); 
         m_usuarios_logados[u->get_id()] = std::make_pair(serv->get_id(), 0);
-        return "Entrou no servidor '" + nome + "' com sucesso";
+        return "[" + u->get_nome() + "]"  + " entrou no servidor '" + nome + "' com sucesso";
     }
 
     if (!serv->get_codigo_convite().empty() && codigo.empty())
@@ -274,13 +274,14 @@ string Sistema::enter_server(int id, const string nome, const string codigo) {
 
     m_usuarios_logados[u->get_id()] = std::make_pair(serv->get_id(), 0);
 
-    return "Entrou no servidor '" + nome + "' com sucesso";
+    return "[" + u->get_nome() + "]" + " entrou no servidor '" + nome + "' com sucesso";
 }
 
 string Sistema::leave_server(int id, const string nome) {
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
+    Usuario *u = find_user(id);
     Servidor *serv = find_server(nome);
 
     if (serv == nullptr)
@@ -288,10 +289,13 @@ string Sistema::leave_server(int id, const string nome) {
 
     if (m_usuarios_logados.at(id).first == 0)
         return "Você não está em um servidor";
-    
+
+    if (!serv->eh_participante(u))
+        return "Você não está no servidor [" + serv->get_nome() + "]";
+
     m_usuarios_logados.at(id) = std::make_pair(0, 0); 
 
-    serv->remover_participante(find_user(id));
+    serv->remover_participante(u);
 
     return "Saindo do servidor '" + nome + "'";
 }
@@ -307,7 +311,7 @@ string Sistema::list_participants(int id) {
 
     Servidor *serv = find_server(serv_id);
 
-    return serv->participantes();
+    return "[" + serv->get_nome() + " - Participantes]\n" + serv->participantes();
 }
 
 string Sistema::list_channels(int id) {
@@ -321,7 +325,7 @@ string Sistema::list_channels(int id) {
 
     Servidor *serv = find_server(serv_id);
 
-    return serv->canais_texto();
+    return "[" + serv->get_nome() + " - Canais]\n" + serv->canais_texto();
 }
 
 string Sistema::create_channel(int id, const string nome) {
@@ -339,7 +343,6 @@ string Sistema::create_channel(int id, const string nome) {
         return "Canal de texto '" + nome + "' já existe";
     
     unsigned int canal_id = serv->gerar_id_canal();
-    //cout << "Canal id [" << canal_id << "]\n";
     Usuario *dono = find_user(id);
     CanalTexto canal = {canal_id, dono, nome};
 
@@ -405,7 +408,7 @@ string Sistema::enter_channel(int id, const string nome) {
 
     m_usuarios_logados[id].second = canal->get_id();
 
-    return "Entrou no canal '" + nome + "'";
+    return "[" + find_user(id)->get_nome() + "] Entrou no canal '" + nome + "'";
 }
 
 string Sistema::leave_channel(int id) {
@@ -449,8 +452,8 @@ string Sistema::send_message(int id, const string mensagem) {
     Mensagem m (canal->gerar_id_mensagem(), u, mensagem);
     canal->add_mensagem(m);
     
-    string nova_mensagem = "Nova mensagem em " + serv->get_nome() + 
-        "("+serv->encontrar_canal(id_canal_atual)->get_nome()+")";
+    string nova_mensagem = "[" + serv->get_nome() + ":" + 
+        canal->get_nome() + "](" + u->get_nome() + "): " + mensagem;
 
 	return nova_mensagem;
 }
