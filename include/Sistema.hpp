@@ -1,26 +1,25 @@
 #ifndef SISTEMA_H
 #define SISTEMA_H
-#include <vector>
-#include <string>
 #include <iostream>
 #include <map>
+#include <string>
 #include <utility>
+#include <vector>
 #include "Usuario.hpp"
 #include "Servidor.hpp"
 
-
-// Sistema deve concentrar todas as operações do Concordo
 class Sistema {
     private:
-        std::vector<Usuario*> m_usuarios;
-        std::vector<Servidor> m_servidores;
-        std::map<int, std::pair<unsigned int, unsigned int>> m_usuarios_logados;
-        std::vector<unsigned int> m_ids_usuarios;
-        std::vector<unsigned int> m_ids_servidores;
-        std::vector<unsigned int> m_ids_mensagens;
+        std::vector<Usuario*> m_usuarios; //!< lista de usuários cadastrados
+        std::vector<Servidor> m_servidores; //!< lista de servidores
+        std::vector<unsigned int> m_ids_usuarios; //!< lista com os ids utilizados de usuários
+        std::vector<unsigned int> m_ids_servidores; //!< ids utilizados de servidores
+        /*! relação dos usuários logados com os ids do servidor e canal 
+            visualizados no momento 
+        */
+        std::map<int, std::pair<unsigned int, unsigned int>> m_usuarios_logados; 
 
   	public:
-
         /*! Retorna o servidor que tem o id igual ao passado por parâmetro
             @param id o id de um servidor
             @return um servidor que tenha esse id ou uma referência nula
@@ -49,7 +48,7 @@ class Sistema {
             @param container uma referencia para um container de ids 
             @return um id disponível para uso
         */
-        unsigned int get_free_id(std::vector<unsigned int> &container);
+        unsigned int generate_id(std::vector<unsigned int> &container);
 
 		/*! Encerra o funcionamento do Concordo, o programa termina ao executar este comando.
 			@return uma string com a mensagem "Saindo.."

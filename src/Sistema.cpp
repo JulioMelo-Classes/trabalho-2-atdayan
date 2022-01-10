@@ -1,44 +1,63 @@
+#include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 #include "CanalTexto.hpp"
 #include "Mensagem.hpp"
 #include "Sistema.hpp"
 #include "Usuario.hpp"
 
-using namespace std;
+using std::string, std::vector;
 
 /* COMANDOS */
 Servidor* Sistema::find_server(const int id) {
-    for (auto &s : m_servidores)
-        if (s.get_id() == id)
-            return &s;
+    auto serv_it = std::find_if(m_servidores.begin(), m_servidores.end(), 
+            [id](Servidor &s) {
+                return s.get_id() == id;
+            });
+
+    if (serv_it != m_servidores.end())
+        return &(*serv_it);
+
     return nullptr;
 }
 
 Servidor* Sistema::find_server(const string &nome) {
-    for (auto &s : m_servidores)
-        if (s.get_nome() == nome)
-            return &s;
+    auto serv_it = std::find_if(m_servidores.begin(), m_servidores.end(), 
+            [nome](Servidor &s) {
+                return s.get_nome() == nome;
+            });
+
+    if (serv_it != m_servidores.end())
+        return &(*serv_it);
+
     return nullptr;
 }
 
 Usuario* Sistema::find_user(const int id) {
-    for (auto &u : m_usuarios)
-        if (u->get_id() == id)
-            return u;
+    auto user_it = std::find_if(m_usuarios.begin(), m_usuarios.end(),
+            [id](Usuario *u) {
+                return u->get_id() == id;
+            });
+
+    if (user_it != m_usuarios.end())
+        return *user_it;
+
     return nullptr;
 }
 
 Usuario* Sistema::find_user(const string &email) {
-    for (auto &u : m_usuarios)
-        if (u->get_email() == email)
-            return u;
+    auto user_it = std::find_if(m_usuarios.begin(), m_usuarios.end(),
+            [email](Usuario *u) {
+                return u->get_email() == email;
+            });
+
+    if (user_it != m_usuarios.end())
+        return *user_it;
+
     return nullptr;
 }
 
-unsigned int Sistema::get_free_id(vector<unsigned int> &container) {
-
+unsigned int Sistema::generate_id(vector<unsigned int> &container) {
     if (container.empty()) {
         container.push_back(1);
         return 1;
@@ -63,13 +82,12 @@ string Sistema::quit() {
 }
 
 string Sistema::create_user(const string email, const string senha, const string nome) {
-
     Usuario *u = find_user(email);
 
     if (u != nullptr)
-        return "Usuário já existe!";
+        return "Usuário já existe";
 
-    unsigned int id = get_free_id(m_ids_usuarios);
+    unsigned int id = generate_id(m_ids_usuarios);
     
     Usuario *novo_usuario = new Usuario {id, nome, email, senha}; 
     m_usuarios.push_back(novo_usuario);
@@ -78,28 +96,32 @@ string Sistema::create_user(const string email, const string senha, const string
 }
 
 string Sistema::delete_user(const std::string email, const std::string senha) {
-
     Usuario *u = find_user(email);
 
-    if (u == nullptr || u->get_senha() != senha)
-        return "Senha ou usuário inválidos";
+    if (u == nullptr)
+        return "Usuário não existe";
 
-    for (auto &serv : m_servidores) 
-        if (serv.get_dono()->get_id() == u->get_id())
-            remove_server(u->get_id(), serv.get_nome());
+    if (u->get_senha() != senha)
+        return "Senha inválida";
 
-    m_ids_usuarios[u->get_id()-1] = 0;
+    if (m_usuarios_logados.count(u->get_id()) == 0)
+        return "Usuário não está logado!";
 
-    auto it = find(m_usuarios.begin(), m_usuarios.end(), u);
+    for (auto &s : m_servidores)
+        s.invalidar_usuario(u);
 
-    m_usuarios.erase(it);
+    m_usuarios_logados.erase(u->get_id());
+
+    std::replace(m_ids_usuarios.begin(), m_ids_usuarios.end(), u->get_id(), 0u);
+
+    auto u_it = find(m_usuarios.begin(), m_usuarios.end(), u);
+    m_usuarios.erase(u_it);
     delete u;
 
 	return "Usuário '" + email + "' removido";
 }
 
 string Sistema::login(const string email, const string senha) {
-
     Usuario *u = find_user(email);
 
     if (u == nullptr || u->get_senha() != senha)
@@ -107,26 +129,26 @@ string Sistema::login(const string email, const string senha) {
 
     if (m_usuarios_logados.count(u->get_id()) > 0)
         return "Usuário já está logado";
-
     
-    m_usuarios_logados[u->get_id()] = make_pair(0, 0);
+    m_usuarios_logados[u->get_id()] = std::make_pair(0, 0);
     return "Logado como " + email;
 }
 
 string Sistema::disconnect(int id) {
+    Usuario *u = find_user(id);
+
+    if (u == nullptr)
+        return "Usuário não existe";
 
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
-
     m_usuarios_logados.erase(id);
 
-    Usuario *u = find_user(id);
-	return "Desconectando usuário " + find_user(id)->get_email();
+	return "Desconectando usuário " + u->get_email();
 }
 
 string Sistema::create_server(int id, const string nome) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -136,7 +158,7 @@ string Sistema::create_server(int id, const string nome) {
 
     Usuario *u = find_user(id);
 
-    unsigned int s_id = get_free_id(m_ids_servidores);
+    unsigned int s_id = generate_id(m_ids_servidores);
 
     Servidor servidor {s_id, u, nome};
     m_servidores.push_back(servidor);
@@ -145,7 +167,6 @@ string Sistema::create_server(int id, const string nome) {
 }
 
 string Sistema::set_server_desc(int id, const string nome, const string descricao) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -163,7 +184,6 @@ string Sistema::set_server_desc(int id, const string nome, const string descrica
 }
 
 string Sistema::set_server_invite_code(int id, const string nome, const string codigo) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -187,24 +207,20 @@ string Sistema::set_server_invite_code(int id, const string nome, const string c
 }
 
 string Sistema::list_servers(int id) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
     if (m_servidores.empty())
         return "Nenhum servidor para exibir";
 
-    string servidores = "--Servidores-- \n";
-    for (auto &serv : m_servidores) {
-        servidores += "  " + serv.get_nome() + "\n";
-    }
-    servidores += "--------------";
+    string servidores = "";
+    for (auto &serv : m_servidores)
+        servidores += serv.get_nome() + "\n";
 
 	return servidores;
 }
 
 string Sistema::remove_server(int id, const string nome) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -216,17 +232,18 @@ string Sistema::remove_server(int id, const string nome) {
     if (serv->get_dono()->get_id() != id)
         return "Você não é o dono do servidor '" + nome + "'";       
 
-    m_servidores.erase((vector<Servidor>::iterator) serv);
 
     for (auto &log : m_usuarios_logados)
         if (log.second.first == serv->get_id())
-            log.second = make_pair(0,0);
+            log.second = std::make_pair(0,0);
     
+    std::replace(m_ids_servidores.begin(), m_ids_servidores.end(), serv->get_id(), 0u);
+    m_servidores.erase((vector<Servidor>::iterator) serv);
+
     return "Servidor '" + nome + "' removido";
 }
 
 string Sistema::enter_server(int id, const string nome, const string codigo) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -241,8 +258,8 @@ string Sistema::enter_server(int id, const string nome, const string codigo) {
     Usuario *u = serv->get_dono();
 
     if (u->get_id() == id) {
-        serv->get_participantes().push_back(u); 
-        m_usuarios_logados[u->get_id()] = make_pair(serv->get_id(), 0);
+        serv->adicionar_participante(u); 
+        m_usuarios_logados[u->get_id()] = std::make_pair(serv->get_id(), 0);
         return "Entrou no servidor '" + nome + "' com sucesso";
     }
 
@@ -253,15 +270,14 @@ string Sistema::enter_server(int id, const string nome, const string codigo) {
         return "Código de convite inválido";
 
     u = find_user(id);
-    serv->set_participantes(u); 
+    serv->adicionar_participante(u); 
 
-    m_usuarios_logados[u->get_id()] = make_pair(serv->get_id(), 0);
+    m_usuarios_logados[u->get_id()] = std::make_pair(serv->get_id(), 0);
 
     return "Entrou no servidor '" + nome + "' com sucesso";
 }
 
 string Sistema::leave_server(int id, const string nome) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -273,16 +289,14 @@ string Sistema::leave_server(int id, const string nome) {
     if (m_usuarios_logados.at(id).first == 0)
         return "Você não está em um servidor";
     
-    if (m_usuarios_logados.at(id).first == serv->get_id())
-        m_usuarios_logados[id] = make_pair(0, 0);
+    m_usuarios_logados.at(id) = std::make_pair(0, 0); 
 
-    serv->remove_participante(find_user(id));
+    serv->remover_participante(find_user(id));
 
     return "Saindo do servidor '" + nome + "'";
 }
 
 string Sistema::list_participants(int id) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -293,16 +307,10 @@ string Sistema::list_participants(int id) {
 
     Servidor *serv = find_server(serv_id);
 
-    string participantes = "--Participantes-- \n";
-    for (auto u : serv->get_participantes())
-        participantes += "  " + u->get_nome() + "\n"; 
-    participantes += "--------------";
-        
-    return participantes;
+    return serv->participantes();
 }
 
 string Sistema::list_channels(int id) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -313,16 +321,10 @@ string Sistema::list_channels(int id) {
 
     Servidor *serv = find_server(serv_id);
 
-    string canais = "--Canais-- \n";
-    for (auto &c : serv->get_canais_texto())
-        canais += "  " + c.get_nome() + "\n"; 
-    canais += "--------------";
-        
-    return canais;
+    return serv->canais_texto();
 }
 
 string Sistema::create_channel(int id, const string nome) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
     
@@ -333,22 +335,20 @@ string Sistema::create_channel(int id, const string nome) {
 
     Servidor *serv = find_server(serv_id);
 
-    for (auto &canal : serv->get_canais_texto()) 
-        if (canal.get_nome() == nome)
-            return "Canal de texto '" + nome + "' já existe";
+    if (serv->encontrar_canal(nome))
+        return "Canal de texto '" + nome + "' já existe";
     
-    unsigned int canal_id = get_free_id(serv->get_id_canais_texto());
-
+    unsigned int canal_id = serv->gerar_id_canal();
+    //cout << "Canal id [" << canal_id << "]\n";
     Usuario *dono = find_user(id);
     CanalTexto canal = {canal_id, dono, nome};
 
-    serv->add_canais_texto(canal);
+    serv->add_canal_texto(canal);
 
     return "Canal de texto '" + nome + "' criado";
 }
 
 string Sistema::remove_channel(int id, const string nome) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
     
@@ -357,7 +357,7 @@ string Sistema::remove_channel(int id, const string nome) {
 
     Servidor *serv = find_server(id_serv_atual);
 
-    CanalTexto *canal = serv->encontra_canal(id_canal_atual);
+    CanalTexto *canal = serv->encontrar_canal(id_canal_atual);
 
     if (canal == nullptr)
         return "Canal não existente";
@@ -368,7 +368,6 @@ string Sistema::remove_channel(int id, const string nome) {
     if (id_serv_atual== 0)
         return "Usuário não está visualizando nenhum servidor";
 
-    
     bool eh_dono_servidor = (serv->get_dono()->get_id() == id);
     bool eh_dono_canal = (canal->get_dono()->get_id() == id);
 
@@ -376,8 +375,8 @@ string Sistema::remove_channel(int id, const string nome) {
         for (auto &u : m_usuarios_logados) 
             if (u.second.second == canal->get_id())
                 u.second.second = 0;
-        serv->remove_canal_texto(canal);
-        serv->libera_id_canais_texto(id_canal_atual);
+        serv->remover_canal_texto(canal);
+        serv->liberar_id_canal(id_canal_atual);
         return "Canal de texto '" + nome + "' deletado";
     }
     
@@ -385,7 +384,6 @@ string Sistema::remove_channel(int id, const string nome) {
 }
 
 string Sistema::enter_channel(int id, const string nome) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -397,7 +395,7 @@ string Sistema::enter_channel(int id, const string nome) {
 
     Servidor *serv = find_server(serv_id);
 
-    CanalTexto *canal = serv->encontra_canal(nome);
+    CanalTexto *canal = serv->encontrar_canal(nome);
 
     if (canal == nullptr)
         return "Canal '" + nome + "' não existe";
@@ -411,7 +409,6 @@ string Sistema::enter_channel(int id, const string nome) {
 }
 
 string Sistema::leave_channel(int id) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -423,17 +420,17 @@ string Sistema::leave_channel(int id) {
     unsigned int serv_id = m_usuarios_logados[id].first;
     Servidor *serv = find_server(serv_id);
 
-    CanalTexto *canal = serv->encontra_canal(id_canal_atual);
+    CanalTexto *canal = serv->encontrar_canal(id_canal_atual);
 
     if (canal == nullptr)
         return "Canal não existente";
 
     m_usuarios_logados[id].second = 0;
+
     return "Saindo do canal '" + canal->get_nome() + "'";
 }
 
 string Sistema::send_message(int id, const string mensagem) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -446,17 +443,19 @@ string Sistema::send_message(int id, const string mensagem) {
         return "Usuário não está em nenhum canal";
     
     Usuario *u = find_user(id);
-
-    Mensagem m (get_free_id(m_ids_mensagens), u, mensagem);
-    
     Servidor *serv = find_server(serv_id);
-    serv->encontra_canal(id_canal_atual)->add_mensagem(m);
+    CanalTexto *canal = serv->encontrar_canal(id_canal_atual);
+
+    Mensagem m (canal->gerar_id_mensagem(), u, mensagem);
+    canal->add_mensagem(m);
     
-	return "Nova mensagem em " + serv->get_nome() + "("+serv->encontra_canal(id_canal_atual)->get_nome()+")";
+    string nova_mensagem = "Nova mensagem em " + serv->get_nome() + 
+        "("+serv->encontrar_canal(id_canal_atual)->get_nome()+")";
+
+	return nova_mensagem;
 }
 
 string Sistema::list_messages(int id) {
-
     if (m_usuarios_logados.count(id) == 0)
         return "Usuário não está logado!";
 
@@ -469,7 +468,8 @@ string Sistema::list_messages(int id) {
         return "Usuário não está em nenhum canal";
 
     Servidor *serv = find_server(serv_id);
-    CanalTexto *canal = serv->
-    
+    CanalTexto *canal = serv->encontrar_canal(id_canal_atual);
+
+    return canal->mensagens();
 }
 

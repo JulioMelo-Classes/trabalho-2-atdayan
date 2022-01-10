@@ -1,13 +1,10 @@
 #include "Usuario.hpp"
 
-using namespace std;
+using std::string;
 
-Usuario::Usuario(unsigned int id, string nome, string email, string senha) {
-    m_id = id;
-    m_nome = nome;
-    m_email = email;
-    m_senha = senha;
-}
+Usuario::Usuario(unsigned int id, string nome, 
+        string email, string senha) :
+        m_id(id), m_nome(nome), m_email(email), m_senha(senha) {}
 
 unsigned int Usuario::get_id() {
     return m_id;
