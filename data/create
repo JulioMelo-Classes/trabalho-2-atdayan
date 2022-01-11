@@ -1,10 +1,10 @@
 create-user golira@selva.com 123456 gun lira
 create-user golira@selva.com enuotehnote Gu Gu
-create-user carrocho@cidade.com 123456 Carrochino Corc
-create-user saparinho@cidade.com cee3333 saparo saas
+create-user carrocho@cidade.com 123456 Carrochino
+create-user saparinho@cidade.com cee3333 saas
 create-user gifara@selva.com 111111
-create-user gifara02@selva.com
-create-user paraguaio@gmail.com entotoao Parin gaAta
+create-user gifara02@selva.com giff
+create-user paraguaio@gmail.com entotoao Parin 
 create-user carrocho@cidade.com 123456 Carry
 create-server 1 zoo
 login golira@gmail.com 123456

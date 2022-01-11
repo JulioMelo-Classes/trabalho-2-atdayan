@@ -1,0 +1,106 @@
+create-user admin@admin.com admin admin
+login admin@admin.com admin
+create-user fernanda@mail.com senha fernanda
+create-user fernanda@mail.com outrasenha fer
+create-user tiago@mail.com senha4 tiago cunha
+create-user tiago2@mail.com senha4 tiago cunha
+create-user samuel@mail.com senha2 samuel
+create-user sarah@mail.com senha3 sarah
+create-user diogo@mail.com senha5 diogo costa
+delete-user tiago2mail.com 
+delete-user tiago2@mail.com 
+delete-user tiago2@mail.com senha4
+login fer@mail.com
+login fernanda@mail.com
+login fernanda@mail.com senhaerrada
+login fernanda@mail.com senha
+login fernanda@mail.com senha
+login samuel@mail.com senha2
+login sarah@mail.com senha3
+login tiago@mail.com senha4
+login tiago2@mail.com senha4
+login diogo@mail.com senha5
+delete-user tiago2@mail.com senha4
+delete-user tiago2@mail.com senha4
+create-user brenda@mail.com senha5 brenda
+login brenda@mail.com senha5
+create-server 1 concordo
+enter-server 1 concordo
+enter-server 2 concordo
+enter-server 3 concordo
+enter-server 4 concordo
+enter-server 5 concordo
+enter-server 6 concordo
+list-participants 1
+list-participants 10
+disconnect 4
+create-server 4 naovaisercriado
+login brenda@mail.com senha5
+create-server 4 familia
+set-server-desc 4 familia A família unida, sempre!!11!
+set-server-desc 2 familia foooooo
+set-server-invite-code 2 familia love&union
+set-server-invite-code 4 familia love&union
+enter-server 4 familia
+enter-server 2 familia
+enter-server 2 familia fight&rage
+enter-server 3 familia love&union
+enter-server 5 familia love&union
+enter-server 6 familia love&union
+list-participants 2 familia
+list-participants 6 familia
+send-message 4 olá, família!!!
+create-channel 4 geral
+send-message 4 olá, família!!!
+enter-channel 2 geral
+send-message 2 humpf...
+enter-channel 4 geral
+send-message 4 olá, família!!!
+create-channel 1 users
+enter-channel 2 users
+enter-channel 2 users
+enter-channel 7 users
+enter-server 7 concordo
+enter-channel 7 users
+send-message 7 posso ser adm?
+create-channel 1 ireideletardps
+enter-channel 1 ireideletardps
+send-message 1 foo bar
+remove-channel 1 ireideletardps
+enter-channel 1 ireideletardps
+create-server 1 servidor-deleção
+enter-server 1 servidor-deleção
+list-participants 1
+list-servers 1
+remove-server 5 servidor-deleção
+enter-server 5 servidor-da-seleção
+remove-server 1 servidor-deleção
+list-participants 1
+list-servers 1
+list-channels 3
+send-message 2 estou saindo
+leave-channel 2
+send-message 2 essa msg não irá ser enviada...
+leave-server 2 familia
+enter-channel 3 gerau
+enter-channel 3 geral
+enter-channel 3 geral
+enter-channel 5 geral
+enter-channel 6 geral
+list-messages 1
+list-messages 5
+send-message 3 bom dia a tds!!!
+send-message 5 bom dia!
+enter-server 2 familia love&union
+enter-channel 2 geral
+send-message 2 péssimo dia por sinal
+send-message 2 odeio vcs >:(
+send-message 2 fuiz
+send-message 6 amo tds vcs :)
+send-message 4 ola!!
+send-message 3 como estão??
+send-message 5 nossa, que deselegante!!
+list-messages 2
+delete-user fernanda@mail.com senha
+list-messages 3
+quit

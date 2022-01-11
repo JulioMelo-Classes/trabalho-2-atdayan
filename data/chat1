@@ -21,4 +21,8 @@ send-message 1 testando no outro
 send-message 2 testando no canal 2
 enter-channel 1 canal2
 send-message 1 testando no canal 2 também...
+list-messages 1
+list-messages 3
+delete-user alice@mail.com 123456
+list-messages 2
 quit
