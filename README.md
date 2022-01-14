@@ -78,3 +78,39 @@ Já está disponínel em `/data` alguns arquivos de teste, que são sequências 
 cd build
 ./concordo < ../data/arquivo_de_teste
 ```
+
+# Avaliação
+## Funcionalidades
+- A1.2 ok
+- A1.3 ok
+- A1.4 ok
+- A2.1 ok
+- A2.2 ok
+- A2.3 ok
+- A2.4 ok
+- A2.5 ok
+- A2.6 ok 
+- A2.7 ok
+- A2.8 ok
+- A2.9 ok
+- B1.1 ok
+- B1.2 ok
+- B1.3 ok
+- B1.4 ok 
+- B1.5 ok
+- B2.1 ok
+- B2.2 ok
+
+## Classes
+- Servidor ok
+- Canal ok
+- Mensagem ok
+
+## Boas Práticas
+- Documentação ok
+- Testes ok
+Legal que você entendeu a ideia de criar casos de teste!
+- Organização ok
+
+## Observações
+O principal problema aqui é que você trouxe muita coisa que deveria ser de responsiabilidade de Canal ou Servidor para dentro da classe Sistema. Como conversamos, uma das ideias da orientação à objetos é que vc delegue tarefas para os objetos com base na pergunta "Quem é o dono dos dados?". Extrapolando essa pergunta, você também não deve expor tipos que não são importantes quando um determinado objeto não precisa daquele tipo diretamente.
